@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import Confetti from "react-confetti"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -17,8 +18,10 @@ import {
 
 export default function TechPostmortemGuide() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+  const [search, setSearch] = useState('')
+  const [showConfetti, setShowConfetti] = useState(false)
 
-  const rhetoricalMoves = [
+ const rhetoricalMoves = [
     {
       title: "Incident Summary",
       status: "Obligatory",
@@ -96,6 +99,15 @@ export default function TechPostmortemGuide() {
     },
   ]
 
+  const filteredMoves = rhetoricalMoves.filter(move => {
+    const lower = search.toLowerCase()
+    return (
+      move.title.toLowerCase().includes(lower) ||
+      move.description.toLowerCase().includes(lower) ||
+      move.example.toLowerCase().includes(lower)
+    )
+  })
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Obligatory":
@@ -111,7 +123,8 @@ export default function TechPostmortemGuide() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Hero Section */}
+      {showConfetti && <Confetti recycle={false} numberOfPieces={500} onConfettiComplete={() => setShowConfetti(false)} />}
+
       <section className="relative py-20 px-4 text-center">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
@@ -123,22 +136,18 @@ export default function TechPostmortemGuide() {
         </div>
       </section>
 
-      {/* Introduction */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
-            <p className="text-lg leading-relaxed text-gray-300">
-              Tech postmortems are public write-ups companies publish after service outages. These documents aim to
-              explain what happened, why it happened, who was affected, and what steps are being taken to prevent future
-              issues. They're written for both technical audiences (like engineers) and non-technical stakeholders (like
-              customers or management). This guide explains how to structure and write an effective postmortem using
-              rhetorical move analysis.
-            </p>
-          </div>
+      <section className="py-4 px-4">
+        <div className="max-w-xl mx-auto">
+          <input
+            type="text"
+            placeholder="Search moves..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-4 py-2 text-sm bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring focus:ring-gray-600"
+          />
         </div>
       </section>
 
-      {/* Moves */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Rhetorical Moves</h2>
@@ -147,24 +156,20 @@ export default function TechPostmortemGuide() {
             animate="visible"
             variants={{
               hidden: {},
-              visible: {
-                transition: {
-                  staggerChildren: 0.1
-                }
-              }
+              visible: { transition: { staggerChildren: 0.1 } }
             }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
           >
-            {rhetoricalMoves.map((move, index) => (
+            {filteredMoves.map((move, index) => (
               <motion.div
                 key={index}
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  visible: { opacity: 1, y: 0 }
-                }}
+                variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
               >
                 <Card
-                  onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                  onClick={() => {
+                    setExpandedIndex(expandedIndex === index ? null : index)
+                    setShowConfetti(true)
+                  }}
                   className="bg-gray-900/50 border-gray-800 hover:border-gray-700 transition-colors cursor-pointer"
                 >
                   <CardHeader>
@@ -214,7 +219,6 @@ export default function TechPostmortemGuide() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="py-12 px-4 border-t border-gray-800">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-gray-500">Created by Yash Thakore for ENC3250 at UCF.</p>
