@@ -14,11 +14,6 @@ import {
   Heart
 } from "lucide-react"
 
-export const metadata = {
-  title: "Tech Postmortem - Rhetorical Guide",
-  description: "A practical guide to understanding and applying rhetorical moves in technical reports",
-}
-
 export default function TechPostmortemGuide() {
   const rhetoricalMoves = [
     {

@@ -1,11 +1,7 @@
-import type { Metadata } from 'next'
 import './globals.css'
+import { metadata } from './metadata'
 
-export const metadata: Metadata = {
-  title: 'Tech Postmortem Guide',
-  description: 'Tech Postmortem Guide',
-  generator: 'Yash Thakore',
-}
+export { metadata }
 
 export default function RootLayout({
   children,
