@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -15,6 +16,8 @@ import {
 } from "lucide-react"
 
 export default function TechPostmortemGuide() {
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null)
+
   const rhetoricalMoves = [
     {
       title: "Incident Summary",
@@ -139,14 +142,29 @@ export default function TechPostmortemGuide() {
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Rhetorical Moves</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-            {rhetoricalMoves.map((move, index) => {
-              const [expanded, setExpanded] = useState(false)
-
-              return (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
+          >
+            {rhetoricalMoves.map((move, index) => (
+              <motion.div
+                key={index}
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0 }
+                }}
+              >
                 <Card
-                  key={index}
-                  onClick={() => setExpanded(!expanded)}
+                  onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
                   className="bg-gray-900/50 border-gray-800 hover:border-gray-700 transition-colors cursor-pointer"
                 >
                   <CardHeader>
@@ -159,30 +177,40 @@ export default function TechPostmortemGuide() {
                     </div>
                     <CardDescription className="text-gray-400">{move.description}</CardDescription>
                   </CardHeader>
-                  {expanded && (
-                    <CardContent>
-                      <div className="bg-gray-800/50 rounded-md p-4 border border-gray-700">
-                        <p className="text-sm font-medium text-gray-300 mb-2">Example:</p>
-                        <p className="text-sm text-gray-400 italic whitespace-pre-line">"{move.example}"</p>
-                      </div>
-                      <div className="bg-gray-700/30 rounded-md p-3 border border-gray-600 mt-3">
-                        <p className="text-xs font-medium text-gray-400 mb-1">Source:</p>
-                        {move.evidence?.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                          <img
-                            src={move.evidence || "/placeholder.svg"}
-                            alt="Evidence"
-                            className="rounded-md mt-2 border border-gray-600"
-                          />
-                        ) : (
-                          <p className="text-xs text-gray-500">{move.evidence}</p>
-                        )}
-                      </div>
-                    </CardContent>
-                  )}
+                  <AnimatePresence initial={false}>
+                    {expandedIndex === index && (
+                      <motion.div
+                        key="content"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      >
+                        <CardContent>
+                          <div className="bg-gray-800/50 rounded-md p-4 border border-gray-700">
+                            <p className="text-sm font-medium text-gray-300 mb-2">Example:</p>
+                            <p className="text-sm text-gray-400 italic whitespace-pre-line">"{move.example}"</p>
+                          </div>
+                          <div className="bg-gray-700/30 rounded-md p-3 border border-gray-600 mt-3">
+                            <p className="text-xs font-medium text-gray-400 mb-1">Source:</p>
+                            {move.evidence?.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                              <img
+                                src={move.evidence || "/placeholder.svg"}
+                                alt="Evidence"
+                                className="rounded-md mt-2 border border-gray-600"
+                              />
+                            ) : (
+                              <p className="text-xs text-gray-500">{move.evidence}</p>
+                            )}
+                          </div>
+                        </CardContent>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </Card>
-              )
-            })}
-          </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
