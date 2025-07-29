@@ -1,6 +1,18 @@
+'use client'
+
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Clock, AlertTriangle, Users, ShieldCheckIcon, Wrench, FileText, Heart } from "lucide-react"
+import {
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  Users,
+  ShieldCheckIcon,
+  Wrench,
+  FileText,
+  Heart
+} from "lucide-react"
 
 export const metadata = {
   title: "Tech Postmortem - Rhetorical Guide",
@@ -53,7 +65,7 @@ export default function TechPostmortemGuide() {
       icon: <Wrench className="h-5 w-5 text-white" />,
       description: "In-depth details of what failed",
       example:
-        "The issue originated in the global control panel which managescommunication layer.",
+        "The issue originated in the global control panel which manages communication layer.",
       evidence:
         "“We use a fleet of HAProxy instances behind a layer 4 load-balancer to distribute requests to the webapp tier. We use Consul for service discovery, and consul-template to render lists of healthy webapp backends that HAProxy should route requests to.” - Slack Engineering",
     },
@@ -113,7 +125,7 @@ export default function TechPostmortemGuide() {
         </div>
       </section>
 
-      {/* Introduction Section */}
+      {/* Introduction */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-gray-900/50 rounded-lg p-8 border border-gray-800">
@@ -128,43 +140,53 @@ export default function TechPostmortemGuide() {
         </div>
       </section>
 
-      {/* Rhetorical Moves Section */}
+      {/* Moves */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Rhetorical Moves</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-            {rhetoricalMoves.map((move, index) => (
-              <Card key={index} className="bg-gray-900/50 border-gray-800 hover:border-gray-700 transition-colors">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      {move.icon}
-                      <CardTitle className="text-xl text-white">{move.title}</CardTitle>
+            {rhetoricalMoves.map((move, index) => {
+              const [expanded, setExpanded] = useState(false)
+
+              return (
+                <Card
+                  key={index}
+                  onClick={() => setExpanded(!expanded)}
+                  className="bg-gray-900/50 border-gray-800 hover:border-gray-700 transition-colors cursor-pointer"
+                >
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        {move.icon}
+                        <CardTitle className="text-xl text-white">{move.title}</CardTitle>
+                      </div>
+                      <Badge className={getStatusColor(move.status)}>{move.status}</Badge>
                     </div>
-                    <Badge className={getStatusColor(move.status)}>{move.status}</Badge>
-                  </div>
-                  <CardDescription className="text-gray-400">{move.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-gray-800/50 rounded-md p-4 border border-gray-700">
-                    <p className="text-sm font-medium text-gray-300 mb-2">Example:</p>
-                    <p className="text-sm text-gray-400 italic whitespace-pre-line">"{move.example}"</p>
-                  </div>
-                  <div className="bg-gray-700/30 rounded-md p-3 border border-gray-600 mt-3">
-                    <p className="text-xs font-medium text-gray-400 mb-1">Source:</p>
-                    {move.evidence?.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                      <img
-                        src={move.evidence || "/placeholder.svg"}
-                        alt="Evidence"
-                        className="rounded-md mt-2 border border-gray-600"
-                      />
-                    ) : (
-                      <p className="text-xs text-gray-500">{move.evidence}</p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <CardDescription className="text-gray-400">{move.description}</CardDescription>
+                  </CardHeader>
+                  {expanded && (
+                    <CardContent>
+                      <div className="bg-gray-800/50 rounded-md p-4 border border-gray-700">
+                        <p className="text-sm font-medium text-gray-300 mb-2">Example:</p>
+                        <p className="text-sm text-gray-400 italic whitespace-pre-line">"{move.example}"</p>
+                      </div>
+                      <div className="bg-gray-700/30 rounded-md p-3 border border-gray-600 mt-3">
+                        <p className="text-xs font-medium text-gray-400 mb-1">Source:</p>
+                        {move.evidence?.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                          <img
+                            src={move.evidence || "/placeholder.svg"}
+                            alt="Evidence"
+                            className="rounded-md mt-2 border border-gray-600"
+                          />
+                        ) : (
+                          <p className="text-xs text-gray-500">{move.evidence}</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>
